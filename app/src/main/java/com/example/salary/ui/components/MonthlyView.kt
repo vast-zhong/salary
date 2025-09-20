@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -63,13 +64,13 @@ private fun MonthlyCard(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (monthData.isCurrentMonth) {
-        MaterialTheme.colorScheme.primary
+        Color(0xFFE53935)
     } else {
-        MaterialTheme.colorScheme.surface
+        Color(0xFFFF8A80)
     }
     
     val textColor = if (monthData.isCurrentMonth) {
-        MaterialTheme.colorScheme.onPrimary
+        Color.White
     } else {
         MaterialTheme.colorScheme.onSurface
     }

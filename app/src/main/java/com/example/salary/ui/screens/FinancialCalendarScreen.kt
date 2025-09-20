@@ -83,7 +83,7 @@ fun FinancialCalendarScreen(
         // 根据选择的视图类型显示不同内容
         when (selectedViewType) {
             0 -> {
-                // 日历视图（支持切换月份）
+                // 日历视图（支持切换月份 + 选中态高亮）
                 val dailyIncomes = remember(workInfo, extraTransactions) {
                     IncomeCalculator.calculateDailyIncomes(workInfo, extraTransactions)
                 }
@@ -95,6 +95,7 @@ fun FinancialCalendarScreen(
                 CalendarView(
                     dailyIncomes = dailyIncomes,
                     currentMonth = currentMonth,
+                    selectedDate = selectedDate,
                     onDateClick = { date ->
                         selectedDate = date
                     },

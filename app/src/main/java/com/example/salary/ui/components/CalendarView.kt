@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter
 fun CalendarView(
     dailyIncomes: List<DailyIncome>,
     currentMonth: YearMonth,
+    selectedDate: LocalDate? = null,
     onDateClick: (LocalDate) -> Unit,
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit,
@@ -64,7 +65,8 @@ fun CalendarView(
     // 固定的中性色板（与深浅色模式无关）
     val NeutralDayBg = Color(0xFFE0E0E0)       // 灰 300
     val NeutralTodayBg = Color(0xFFBDBDBD)     // 灰 400（今日略突出）
-    val IncomeBg = Color(0xFFFF8A80)           // 固定浅红色表示有收入
+    val IncomeBg = Color(0xFFFF8A80)           // 浅红（有收入未选中）
+    val SelectedBg = Color(0xFFE53935)         // 深红（选中）
     val NeutralText = Color(0xFF212121)        // 深灰文字
     val NeutralHint = Color(0xFF757575)        // 次级文字
     val WeekdayText = Color(0xFF9E9E9E)        // 星期标题文字
@@ -136,10 +138,12 @@ fun CalendarView(
                     is CalendarDay.Day -> {
                         CalendarDayItem(
                             day = calendarDay,
+                            selected = selectedDate != null && calendarDay.date == selectedDate,
                             onClick = { onDateClick(calendarDay.date) },
                             neutralDayBg = NeutralDayBg,
                             neutralTodayBg = NeutralTodayBg,
                             incomeBg = IncomeBg,
+                            selectedBg = SelectedBg,
                             neutralText = NeutralText,
                             neutralHint = NeutralHint
                         )
@@ -153,21 +157,25 @@ fun CalendarView(
 @Composable
 private fun CalendarDayItem(
     day: CalendarDay.Day,
+    selected: Boolean = false,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     neutralDayBg: Color = Color(0xFFE0E0E0),
     neutralTodayBg: Color = Color(0xFFBDBDBD),
     incomeBg: Color = Color(0xFFFF8A80),
+    selectedBg: Color = Color(0xFFE53935),
     neutralText: Color = Color(0xFF212121),
     neutralHint: Color = Color(0xFF757575)
 ) {
     val backgroundColor = when {
-        day.income != null && day.income.dailyIncome > 0 -> incomeBg // 固定浅红色表示有收入
+        selected -> selectedBg // 选中优先深红
+        day.income != null && day.income.dailyIncome > 0 -> incomeBg // 未选中但有收入浅红
         day.isToday -> neutralTodayBg
         else -> neutralDayBg
     }
 
     val textColor = when {
+        selected -> Color.White
         day.income != null && day.income.dailyIncome > 0 -> Color.White
         else -> neutralText
     }

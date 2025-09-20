@@ -78,13 +78,13 @@ private fun WeeklyCard(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (weekData.isCurrentWeek) {
-        MaterialTheme.colorScheme.primary
+        Color(0xFFE53935)
     } else {
-        MaterialTheme.colorScheme.surface
+        Color(0xFFFF8A80)
     }
     
     val textColor = if (weekData.isCurrentWeek) {
-        MaterialTheme.colorScheme.onPrimary
+        Color.White
     } else {
         MaterialTheme.colorScheme.onSurface
     }
