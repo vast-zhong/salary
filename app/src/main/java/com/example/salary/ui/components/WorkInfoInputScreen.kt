@@ -20,7 +20,7 @@ fun WorkInfoInputScreen(
     onWorkInfoSubmit: (WorkInfo) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var monthlySalary by remember { mutableStateOf("") }
+    var monthlySalary by remember { mutableStateOf("3000") }
     var workDaysPerMonth by remember { mutableStateOf("22") }
     var workHoursPerDay by remember { mutableStateOf("8") }
     var startDate by remember { mutableStateOf("") }

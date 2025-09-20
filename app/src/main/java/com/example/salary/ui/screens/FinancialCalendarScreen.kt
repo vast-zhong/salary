@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.salary.data.WorkInfo
@@ -29,9 +30,9 @@ fun FinancialCalendarScreen(
     var selectedViewType by remember { mutableStateOf(0) } // 0=日, 1=周, 2=月, 3=年
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
-    
+
     val viewTypes = listOf("日", "周", "月", "年")
-    
+
     if (workInfo == null) {
         // 如果没有工作信息，显示提示
         Box(
@@ -57,55 +58,56 @@ fun FinancialCalendarScreen(
         }
         return
     }
-    
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // 标题和视图切换
+        // 顶部切换条放置在中间上方（参考示例）
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "财政日历",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+            val types = viewTypes
+            SegmentedButtons(
+                options = types,
+                selectedIndex = selectedViewType,
+                onSelected = { selectedViewType = it }
             )
-            
-            // 视图类型切换按钮
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                viewTypes.forEachIndexed { index, type ->
-                    FilterChip(
-                        onClick = { selectedViewType = index },
-                        label = { Text(type) },
-                        selected = selectedViewType == index,
-                        modifier = Modifier.height(32.dp)
-                    )
-                }
-            }
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         // 根据选择的视图类型显示不同内容
         when (selectedViewType) {
             0 -> {
-                // 日历视图
+                // 日历视图（支持切换月份）
                 val dailyIncomes = remember(workInfo, extraTransactions) {
                     IncomeCalculator.calculateDailyIncomes(workInfo, extraTransactions)
                 }
-                
+
+                // 限制最早不能早于工作开始月份，最晚不超过当前月份+12（可按需调整）
+                val minMonth = YearMonth.from(workInfo.startDate)
+                val maxMonth = YearMonth.from(LocalDate.now()).plusMonths(12)
+
                 CalendarView(
                     dailyIncomes = dailyIncomes,
                     currentMonth = currentMonth,
                     onDateClick = { date ->
                         selectedDate = date
-                    }
+                    },
+                    onPrevMonth = {
+                        val prev = currentMonth.minusMonths(1)
+                        currentMonth = if (!prev.isBefore(minMonth)) prev else minMonth
+                    },
+                    onNextMonth = {
+                        val next = currentMonth.plusMonths(1)
+                        currentMonth = if (!next.isAfter(maxMonth)) next else maxMonth
+                    },
+                    canGoPrev = currentMonth.isAfter(minMonth),
+                    canGoNext = currentMonth.isBefore(maxMonth)
                 )
             }
             1 -> {
@@ -113,7 +115,7 @@ fun FinancialCalendarScreen(
                 val dailyIncomes = remember(workInfo, extraTransactions) {
                     IncomeCalculator.calculateDailyIncomes(workInfo, extraTransactions)
                 }
-                
+
                 WeeklyView(
                     dailyIncomes = dailyIncomes,
                     currentDate = selectedDate
@@ -124,7 +126,7 @@ fun FinancialCalendarScreen(
                 val dailyIncomes = remember(workInfo, extraTransactions) {
                     IncomeCalculator.calculateDailyIncomes(workInfo, extraTransactions)
                 }
-                
+
                 MonthlyView(
                     dailyIncomes = dailyIncomes,
                     currentYear = selectedDate.year
@@ -153,6 +155,25 @@ fun FinancialCalendarScreen(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SegmentedButtons(
+    options: List<String>,
+    selectedIndex: Int,
+    onSelected: (Int) -> Unit
+) {
+    SingleChoiceSegmentedButtonRow {
+        options.forEachIndexed { index, label ->
+            SegmentedButton(
+                selected = selectedIndex == index,
+                onClick = { onSelected(index) },
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size)
+            ) {
+                Text(label, modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp), textAlign = TextAlign.Center)
             }
         }
     }

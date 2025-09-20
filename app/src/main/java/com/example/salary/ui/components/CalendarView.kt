@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +29,10 @@ fun CalendarView(
     dailyIncomes: List<DailyIncome>,
     currentMonth: YearMonth,
     onDateClick: (LocalDate) -> Unit,
+    onPrevMonth: () -> Unit,
+    onNextMonth: () -> Unit,
+    canGoPrev: Boolean = true,
+    canGoNext: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val today = LocalDate.now()
@@ -64,15 +70,34 @@ fun CalendarView(
     val WeekdayText = Color(0xFF9E9E9E)        // 星期标题文字
 
     Column(modifier = modifier) {
-        // 月份标题（保持现有主题样式，不强制固定颜色）
-        Text(
-            text = "${currentMonth.year}年 ${currentMonth.monthValue}月",
-            style = MaterialTheme.typography.headlineSmall,
+        // 顶部：月份切换（居中）
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            textAlign = TextAlign.Center
-        )
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onPrevMonth, enabled = canGoPrev) {
+                Icon(
+                    imageVector = Icons.Filled.ChevronLeft,
+                    contentDescription = "上个月"
+                )
+            }
+
+            Text(
+                text = "${currentMonth.year}年 ${currentMonth.monthValue}月",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center
+            )
+
+            IconButton(onClick = onNextMonth, enabled = canGoNext) {
+                Icon(
+                    imageVector = Icons.Filled.ChevronRight,
+                    contentDescription = "下个月"
+                )
+            }
+        }
 
         // 星期标题（固定为中性灰）
         Row(
@@ -106,14 +131,12 @@ fun CalendarView(
                         Box(
                             modifier = Modifier
                                 .aspectRatio(1f)
-                                .padding(2.dp)
-                        )
+                        ) {}
                     }
                     is CalendarDay.Day -> {
                         CalendarDayItem(
                             day = calendarDay,
                             onClick = { onDateClick(calendarDay.date) },
-                            // 传递固定色板
                             neutralDayBg = NeutralDayBg,
                             neutralTodayBg = NeutralTodayBg,
                             incomeBg = IncomeBg,
@@ -169,7 +192,7 @@ private fun CalendarDayItem(
                 fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Normal,
                 color = textColor
             )
-
+            Spacer(modifier = Modifier.height(4.dp))
             if (day.income != null && day.income.dailyIncome > 0) {
                 Text(
                     text = "+${String.format("%.2f", day.income.dailyIncome)}",
