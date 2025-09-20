@@ -12,18 +12,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.example.salary.ui.theme.SalaryTheme
+import com.example.salary.ui.screens.*
 import com.example.salary.data.WorkInfo
 import com.example.salary.data.ExtraTransaction
-import com.example.salary.ui.components.*
-import com.example.salary.ui.screens.FinancialPlanningScreen
-import com.example.salary.ui.screens.FinancialCalendarScreen
-import com.example.salary.ui.screens.FinancialStatusScreen
-import com.example.salary.ui.screens.SettingsScreen
-import com.example.salary.ui.theme.SalaryTheme
-import com.example.salary.utils.IncomeCalculator
-import java.time.LocalDate
-import java.time.YearMonth
+import com.example.salary.data.WorkInfoStorage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,11 +33,18 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SalaryApp() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     var workInfo by remember { mutableStateOf<WorkInfo?>(null) }
     var extraTransactions by remember { mutableStateOf<List<ExtraTransaction>>(emptyList()) }
     var selectedBottomTab by remember { mutableStateOf(0) }
     var showSettings by remember { mutableStateOf(false) }
-    
+
+    // 启动时加载保存的工作信息
+    LaunchedEffect(Unit) {
+        workInfo = WorkInfoStorage.load(context)
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         // 顶部应用栏
         TopAppBar(
@@ -55,7 +55,7 @@ fun SalaryApp() {
                 }
             }
         )
-        
+
         // 主要内容区域
         Box(modifier = Modifier.weight(1f)) {
             when (selectedBottomTab) {
@@ -63,6 +63,8 @@ fun SalaryApp() {
                     workInfo = workInfo,
                     onWorkInfoUpdated = { newWorkInfo ->
                         workInfo = newWorkInfo
+                        // 同步保存
+                        WorkInfoStorage.save(context, newWorkInfo)
                     },
                     extraTransactions = extraTransactions,
                     onTransactionAdded = { transaction ->
@@ -79,7 +81,7 @@ fun SalaryApp() {
                 )
             }
         }
-        
+
         // 底部导航栏
         NavigationBar {
             NavigationBarItem(
@@ -101,7 +103,7 @@ fun SalaryApp() {
                 onClick = { selectedBottomTab = 2 }
             )
         }
-        
+
         // 设置对话框
         if (showSettings) {
             AlertDialog(
