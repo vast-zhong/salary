@@ -33,15 +33,15 @@ fun CalendarView(
     val firstDayOfMonth = currentMonth.atDay(1)
     val lastDayOfMonth = currentMonth.atEndOfMonth()
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
-    
+
     // 创建日历网格数据
     val calendarDays = mutableListOf<CalendarDay>()
-    
+
     // 添加上个月的空白天数
     repeat(firstDayOfWeek) {
         calendarDays.add(CalendarDay.Empty)
     }
-    
+
     // 添加当月的天数
     for (day in 1..lastDayOfMonth.dayOfMonth) {
         val date = currentMonth.atDay(day)
@@ -54,9 +54,17 @@ fun CalendarView(
             )
         )
     }
-    
+
+    // 固定的中性色板（与深浅色模式无关）
+    val NeutralDayBg = Color(0xFFE0E0E0)       // 灰 300
+    val NeutralTodayBg = Color(0xFFBDBDBD)     // 灰 400（今日略突出）
+    val IncomeBg = Color(0xFFFF8A80)           // 固定浅红色表示有收入
+    val NeutralText = Color(0xFF212121)        // 深灰文字
+    val NeutralHint = Color(0xFF757575)        // 次级文字
+    val WeekdayText = Color(0xFF9E9E9E)        // 星期标题文字
+
     Column(modifier = modifier) {
-        // 月份标题
+        // 月份标题（保持现有主题样式，不强制固定颜色）
         Text(
             text = "${currentMonth.year}年 ${currentMonth.monthValue}月",
             style = MaterialTheme.typography.headlineSmall,
@@ -65,8 +73,8 @@ fun CalendarView(
                 .padding(16.dp),
             textAlign = TextAlign.Center
         )
-        
-        // 星期标题
+
+        // 星期标题（固定为中性灰）
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -77,13 +85,13 @@ fun CalendarView(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = WeekdayText
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         // 日历网格
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
@@ -104,7 +112,13 @@ fun CalendarView(
                     is CalendarDay.Day -> {
                         CalendarDayItem(
                             day = calendarDay,
-                            onClick = { onDateClick(calendarDay.date) }
+                            onClick = { onDateClick(calendarDay.date) },
+                            // 传递固定色板
+                            neutralDayBg = NeutralDayBg,
+                            neutralTodayBg = NeutralTodayBg,
+                            incomeBg = IncomeBg,
+                            neutralText = NeutralText,
+                            neutralHint = NeutralHint
                         )
                     }
                 }
@@ -117,20 +131,24 @@ fun CalendarView(
 private fun CalendarDayItem(
     day: CalendarDay.Day,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    neutralDayBg: Color = Color(0xFFE0E0E0),
+    neutralTodayBg: Color = Color(0xFFBDBDBD),
+    incomeBg: Color = Color(0xFFFF8A80),
+    neutralText: Color = Color(0xFF212121),
+    neutralHint: Color = Color(0xFF757575)
 ) {
     val backgroundColor = when {
-        day.isToday -> MaterialTheme.colorScheme.primary
-        day.income != null && day.income.dailyIncome > 0 -> Color(0xFFE57373) // 浅红色表示有收入
-        else -> MaterialTheme.colorScheme.surface
+        day.income != null && day.income.dailyIncome > 0 -> incomeBg // 固定浅红色表示有收入
+        day.isToday -> neutralTodayBg
+        else -> neutralDayBg
     }
-    
+
     val textColor = when {
-        day.isToday -> MaterialTheme.colorScheme.onPrimary
-        day.income != null -> Color.White
-        else -> MaterialTheme.colorScheme.onSurface
+        day.income != null && day.income.dailyIncome > 0 -> Color.White
+        else -> neutralText
     }
-    
+
     Card(
         modifier = modifier
             .aspectRatio(1f)
@@ -151,7 +169,7 @@ private fun CalendarDayItem(
                 fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Normal,
                 color = textColor
             )
-            
+
             if (day.income != null && day.income.dailyIncome > 0) {
                 Text(
                     text = "+${String.format("%.2f", day.income.dailyIncome)}",
@@ -163,7 +181,7 @@ private fun CalendarDayItem(
                 Text(
                     text = "0.00",
                     fontSize = 10.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = neutralHint,
                     textAlign = TextAlign.Center
                 )
             }
