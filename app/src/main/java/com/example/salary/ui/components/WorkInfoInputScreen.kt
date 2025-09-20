@@ -9,7 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.salary.data.WorkInfo
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,46 +140,40 @@ fun WorkInfoInputScreen(
         }
     }
     
-    // 日期选择器 (简化版本，实际项目中可以使用更完善的日期选择器)
+    // 日期选择器：Material3 DatePickerDialog，可选择任意日期
     if (showDatePicker) {
-        AlertDialog(
+        val initialMillis = selectedDate
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = initialMillis
+        )
+        DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
-            title = { Text("选择开始工作日期") },
-            text = {
-                Column {
-                    Text("当前选择: ${selectedDate.format(dateFormatter)}")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            onClick = { selectedDate = selectedDate.minusDays(1) }
-                        ) {
-                            Text("前一天")
-                        }
-                        Button(
-                            onClick = { selectedDate = selectedDate.plusDays(1) }
-                        ) {
-                            Text("后一天")
-                        }
-                    }
-                }
-            },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        startDate = selectedDate.format(dateFormatter)
+                        val millis = datePickerState.selectedDateMillis
+                        if (millis != null) {
+                            val picked = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                            selectedDate = picked
+                            startDate = picked.format(dateFormatter)
+                        }
                         showDatePicker = false
                     }
-                ) {
-                    Text("确定")
-                }
+                ) { Text("确定") }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("取消")
-                }
+                TextButton(onClick = { showDatePicker = false }) { Text("取消") }
             }
-        )
+        ) {
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = true
+            )
+        }
     }
 }
