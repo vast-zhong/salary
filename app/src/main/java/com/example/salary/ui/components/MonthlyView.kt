@@ -69,11 +69,7 @@ private fun MonthlyCard(
         Color(0xFFFF8A80)
     }
     
-    val textColor = if (monthData.isCurrentMonth) {
-        Color.White
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val textColor = MaterialTheme.colorScheme.onSurface
     
     Card(
         modifier = modifier.fillMaxWidth(),
