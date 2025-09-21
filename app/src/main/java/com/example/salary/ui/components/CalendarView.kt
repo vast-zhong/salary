@@ -197,8 +197,8 @@ private fun CalendarDayItem(
     }
 
     // 动态字体：随单元尺寸略缩放，兼顾小屏
-    val dayFont = if (cellSize != null) (cellSize.value * 0.25f).sp else 16.sp
-    val incomeFont = if (cellSize != null) (cellSize.value * 0.20f).sp else 10.sp
+    val dayFont = if (cellSize != null) (cellSize.value * 0.3f).sp else 16.sp
+    val incomeFont = if (cellSize != null) (cellSize.value * 0.25f).sp else 10.sp
 
     Card(
         modifier = baseModifier
@@ -209,14 +209,14 @@ private fun CalendarDayItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 4.dp, vertical = 2.dp),
+                .padding(horizontal = 4.dp, vertical = 0.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = day.date.dayOfMonth.toString(),
                 fontSize = dayFont,
-                fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Medium,
+                fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Bold,
                 color = textColor,
                 maxLines = 1
             )
