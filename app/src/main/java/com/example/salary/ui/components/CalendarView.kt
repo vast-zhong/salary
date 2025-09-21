@@ -70,7 +70,7 @@ fun CalendarView(
     val SelectedBg = Color(0xFFE53935)         // 深红（选中）
     val NeutralText = Color(0xFF212121)        // 深灰文字
     val NeutralHint = Color(0xFF757575)        // 次级文字
-    val WeekdayText = Color(0xFF9E9E9E)        // 星期标题文字
+    val WeekdayText = Color.Black        // 星期标题文字
 
     Column(modifier = modifier) {
         // 顶部：月份切换（居中）
@@ -209,14 +209,14 @@ private fun CalendarDayItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 4.dp, vertical = 1.dp),
+                .padding(horizontal = 4.dp, vertical = 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
                 text = day.date.dayOfMonth.toString(),
                 fontSize = dayFont,
-                fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Normal,
+                fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Medium,
                 color = textColor,
                 maxLines = 1
             )
@@ -228,18 +228,34 @@ private fun CalendarDayItem(
                     incomeValue < 0 -> String.format("%.2f", incomeValue)
                     else -> "0.00"
                 }
+                val incomeTextColor = if (selected) {
+                    Color.White
+                } else {
+                    when {
+                        incomeValue > 0 -> Color.Red
+                        incomeValue < 0 -> Color.Green
+                        else -> neutralText
+                    }
+                }
                 Text(
                     text = incomeText,
                     fontSize = incomeFont,
-                    color = textColor,
+                    fontWeight = FontWeight.Medium,
+                    color = incomeTextColor,
                     textAlign = TextAlign.Center,
                     maxLines = 1
                 )
             } else if (day.date.isBefore(LocalDate.now()) || day.date.isEqual(LocalDate.now())) {
+                val zeroIncomeTextColor = if (selected) {
+                    Color.White
+                } else {
+                    neutralText
+                }
                 Text(
                     text = "0.00",
                     fontSize = incomeFont,
-                    color = neutralText,
+                    fontWeight = FontWeight.Medium,
+                    color = zeroIncomeTextColor,
                     textAlign = TextAlign.Center,
                     maxLines = 1
                 )
