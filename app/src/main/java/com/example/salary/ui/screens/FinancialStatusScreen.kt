@@ -58,18 +58,21 @@ fun FinancialStatusScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // 标题
         Text(
             text = "财政情况",
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxHeight(0.08f)
         )
         
         // 总收入卡片
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.25f),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -111,7 +114,9 @@ fun FinancialStatusScreen(
         
         // 统计信息卡片
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.2f),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // 本周收入
@@ -183,8 +188,10 @@ fun FinancialStatusScreen(
         
         // 额外收入和支出统计
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.3f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // 额外收入
             Card(
@@ -263,7 +270,9 @@ fun FinancialStatusScreen(
         
         // 工作信息卡片
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f),
             shape = RoundedCornerShape(12.dp)
         ) {
             Column(

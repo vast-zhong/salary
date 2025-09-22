@@ -211,7 +211,7 @@ private fun CalendarDayItem(
                 .fillMaxSize()
                 .padding(horizontal = 4.dp, vertical = 0.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.spacedBy(-4.dp)
         ) {
             Text(
                 text = day.date.dayOfMonth.toString(),

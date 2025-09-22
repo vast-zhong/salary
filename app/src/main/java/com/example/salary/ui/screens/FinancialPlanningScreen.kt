@@ -46,16 +46,18 @@ fun FinancialPlanningScreen(
         
         // 三个功能按钮
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // 正经收入按钮
             Card(
                 onClick = { showWorkInfoInput = true },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp),
+                    .weight(1f),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -95,7 +97,7 @@ fun FinancialPlanningScreen(
                 onClick = { showExtraIncomeDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp),
+                    .weight(1f),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
@@ -135,7 +137,7 @@ fun FinancialPlanningScreen(
                 onClick = { showExpenseDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp),
+                    .weight(1f),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer
@@ -174,7 +176,9 @@ fun FinancialPlanningScreen(
         // 当前工作信息显示
         if (workInfo != null) {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.9f),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(
